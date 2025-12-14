@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import { verifyPassword, signToken } from '@/lib/auth';
@@ -38,16 +38,17 @@ export async function POST(req: Request) {
         // Create Token
         const token = await signToken({ sub: user._id, username: user.username, role: user.role });
 
-        const cookieStore = await cookies();
-        cookieStore.set('admin_token', token, {
+        const response = NextResponse.json({ success: true });
+
+        response.cookies.set('admin_token', token, {
             httpOnly: true,
             path: '/',
             maxAge: 60 * 60 * 24, // 1 day
-            sameSite: 'lax', // Improve security
-            secure: process.env.NODE_ENV === 'production' // Secure in prod only
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
         });
 
-        return NextResponse.json({ success: true });
+        return response;
     } catch (error: any) {
         console.error('Login Error:', error);
 
