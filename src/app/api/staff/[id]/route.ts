@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Staff from '@/models/Staff';
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const params = await props.params;
         const body = await req.json();
         const updatedStaff = await Staff.findByIdAndUpdate(params.id, body, { new: true });
 
@@ -18,9 +19,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const params = await props.params;
         const deletedStaff = await Staff.findByIdAndDelete(params.id);
 
         if (!deletedStaff) {

@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Review from '@/models/Review';
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
+        const params = await props.params;
         const deletedReview = await Review.findByIdAndDelete(params.id);
 
         if (!deletedReview) {
